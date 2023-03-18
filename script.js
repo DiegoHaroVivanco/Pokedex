@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", ()=>{ // espera a que la API respo
         return data.pokemon_species
     }
 
+    const extractStr = (str) =>{
+        const mySubString = str.substring(str.lastIndexOf("s/") + 2, str.lastIndexOf("/"))
+        return mySubString
+    }
     
     const getPokemons = async (num) =>{
         let endPoint = `${URL_API}/generation/${num}/`
@@ -28,15 +32,25 @@ document.addEventListener("DOMContentLoaded", ()=>{ // espera a que la API respo
         let pokemons = []
         pokemons = await fetchPokemons(endPoint) // pokemones que me trae el endpoint
         
-        pokemons.forEach((pokemon) =>{
-
+        pokemons.forEach((pokemon, index) =>{
+            pokemons[index].num = extractStr(pokemon.url)
+        })
+        pokemons.sort((a, b) => a.num - b.num) // ordeno los pokemones de menor a mayor segun su número
+        
+        pokemons.forEach((pokemon) => {
+            let divItem = document.createElement("li")
+            divItem.classList.add("item")
+            divItem.innerHTML = `<div> ${extractStr(pokemon.url)}-${pokemon.name}</div>`
+            container.appendChild(divItem)        
         })
 
+        console.log(pokemons); 
+ 
     }
-    // getPokemons(1)
+    getPokemons(1)
     
     const geners = ["generation-1","generation-2","generation-3",
-    "generation-4", "generation-5", "generation-6", "generation-7"]
+                    "generation-4", "generation-5", "generation-6", "generation-7"]
     
     const filters = document.getElementById("filters")
     let gen = ""
